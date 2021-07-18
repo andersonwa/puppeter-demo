@@ -2,9 +2,9 @@ import puppeteer from 'puppeteer';
 import dotenv from 'dotenv';
 import {loginSelectors, searchResultSelectors, pages, searchParam} from './helpers/selectors';
 
-(async () => {
-  dotenv.config();
+dotenv.config();
 
+(async () => {
   try {
     const browser = await puppeteer.launch({
       args: ['--no-sandbox'],
@@ -16,14 +16,11 @@ import {loginSelectors, searchResultSelectors, pages, searchParam} from './helpe
     await page.goto(pages.loginPage);
 
     await page.type(loginSelectors.usernameInput, process.env.USER_LOGIN);
-    await page.type(loginSelectors.passwordInput, process.env.DATABASE_HOST);
+    await page.type(loginSelectors.passwordInput, process.env.USER_PASSWORD);
     await page.click(loginSelectors.submitButton);
     await page.waitForSelector(loginSelectors.loggedInProfile);
 
     await page.goto(`${pages.searchPage}/${searchParam.query}`);
-
-    console.log(loginSelectors, searchResultSelectors);
-
     await page.waitForSelector(searchResultSelectors.resultDiv);
 
     const data = await page.evaluate((searchResultSelectors) => {
@@ -44,7 +41,7 @@ import {loginSelectors, searchResultSelectors, pages, searchParam} from './helpe
           name: name,
           downloadQuantity: Number(splitedText[0]),
           score: score,
-          likeRatio: 2.5,
+          likeRatio: parseFloat((score/10).toFixed(2)),
           author: splitedText[6],
           date: createDate,
           language: language,
